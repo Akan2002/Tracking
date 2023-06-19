@@ -1,4 +1,5 @@
-from rest_framework import serializers, exceptions
+from rest_framework import serializers
+from rest_framework_simplejwt.tokens import RefreshToken
 from .models import UserPosition, User
 
 
@@ -9,25 +10,36 @@ class UserPositionSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    position = UserPositionSerializer(read_only=True)
+    position = UserPositionSerializer(required=False)
 
     class Meta:
         model = User
         fields = ('id', 'username', 'password', 'position')
 
+    def create(self, validated_data):
+        position_data = validated_data.pop('position')
+        password = validated_data.pop('password')
+        user = User(**validated_data)
+        user.set_password(password)
+        user.save()
+        UserPosition.objects.create(user=user, **position_data)
+        return user
 
-class RegistrationSerializer(serializers.Serializer):
+
+class AuthenticationSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField()
-    email = serializers.CharField()
 
-    def validated_password(self, value):
-        if len(value) < 6:
-            raise exceptions.ValidationError('Пароль слишком короткий')                  
-        elif len(value) > 20:
-            raise exceptions.ValidationError('Пароль слишком длинный')
-        return value
+    def validate(self, attrs):
+        username = attrs.get('username')
+        password = attrs.get('password')
+        user = User.objects.filter(username=username).first()
 
-class AuthenticationSeriallizer(serializers.Serializer):
-    username = serializers.CharField()
-    password = serializers.CharField()
+        if user and user.check_password(password):
+            refresh = RefreshToken.for_user(user)
+            attrs['refresh'] = str(refresh)
+            attrs['access'] = str(refresh.access_token)
+        else:
+            raise serializers.ValidationError('Неверные учетные данные')
+
+        return attrs

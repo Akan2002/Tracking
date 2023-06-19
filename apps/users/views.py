@@ -10,7 +10,8 @@ from django.contrib.auth.hashers import check_password
 from apps.users.models import User, UserPosition
 from apps.users.serializers import (
     UserSerializer, UserPositionSerializer, 
-    RegistrationSerializer, AuthenticationSeriallizer
+    UserSerializer, AuthenticationSerializer,
+    
 )
 
 class UserView(ModelViewSet):
@@ -25,40 +26,59 @@ class UserPositionView(ModelViewSet):
 
 class RegistrationView(APIView):
     def post(self, request):
-        serializer = RegistrationSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        data = serializer.validated_data
-        username = data.get('username')
-        password = data.get('password')
-        email = data.get('email')
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                'user_id': user.id,
+                'username': user.username,
+                'email': user.email,
+                'position': user.position.position,
+                'access_token': str(refresh.access_token),
+                'refresh_token': str(refresh),
+            }, status=201)
+        return Response(serializer.errors, status=400)
 
-        if User.objects.filter(username=username).exists():
-            return Response(
-                {'message': 'Пользоваетель с таким именем существует'},
-                status=status.HTTP_403_FORBIDDEN
-            )
-        user = User.objects.create_user(
-            username=username,
-            password=password,
-        )
-
-        token = RefreshToken.objects.create(user=user)
-        return Response({'token': token.key}, status.HTTP_201_CREATED)
-    
 
 class AuthenticationView(APIView):
     def post(self, request):
-        serializer = AuthenticationSeriallizer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        data = serializer.validated_data
-        username = data.get('username')
-        password = data.get('password')
+        serializer = AuthenticationSerializer(data=request.data)
+        if serializer.is_valid():
+            return Response(serializer.validated_data, status=200)
+        return Response(serializer.errors, status=400)
+    
 
-        user = User.objects.filter(username=username).first()
 
-        if user is not None:
-            if check_password(password, user.password):
-                token, _ = RefreshToken.objects.get_or_create(user=user)
-                return Response({'token': token.key}, status=status.HTTP_200_OK)
-            return Response({"error": 'Пароль не верный'}, status=status.HTTP_400_BAD_REQUEST)
-        return Response({"error": 'Такой пользователь не существует'}, status=status.HTTP_400_BAD_REQUEST)
+# {
+#         "id": 2,
+#         "username": "vasya",
+#         "password": "1qaz2wsx",
+#         "position": null
+#     },
+#     {
+#         "id": 3,
+#         "username": "arz",
+#         "password": "1qaz2wsx",
+#         "position": null
+#     },
+#     {
+#         "id": 4,
+#         "username": "akan",
+#         "password": "1qaz2wsx",
+#         "position": null
+#     },
+
+# {
+#          "username": "shitcoin",
+#          "password": "1qaz2wsx",
+#          "position": null
+# }
+
+{
+    "username": "vasya",
+    "password": "1qaz2wsx",
+    "position": {
+        "position": "june"
+    }
+}

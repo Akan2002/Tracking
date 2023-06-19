@@ -14,4 +14,5 @@ urlpatterns = [
     path('auth/', AuthenticationView.as_view()),
 ]
 
+
 urlpatterns += router.urls
