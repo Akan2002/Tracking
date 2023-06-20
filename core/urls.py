@@ -5,6 +5,7 @@ from django.conf import settings
 
 from core.yasg import urlpatterns as docs_urls
 
+
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -15,6 +16,11 @@ urlpatterns = [
     path('api/', include('apps.users.urls')),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'), 
+]
+
+urlpatterns2 = [
+    path("admin/", admin.site.urls),
+    path('api/', include('apps.projects.urls')),
 ]
 
 urlpatterns += docs_urls
