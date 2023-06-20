@@ -10,5 +10,3 @@ class User(AbstractUser):
     position = models.ForeignKey(
         UserPosition, on_delete=models.CASCADE, related_name='users_position', blank=True, null=True
 )
-
-# blank=True, null=True

@@ -33,7 +33,6 @@ class RegistrationView(APIView):
             return Response({
                 'user_id': user.id,
                 'username': user.username,
-                'email': user.email,
                 'position': user.position.position,
                 'access_token': str(refresh.access_token),
                 'refresh_token': str(refresh),
@@ -47,38 +46,3 @@ class AuthenticationView(APIView):
         if serializer.is_valid():
             return Response(serializer.validated_data, status=200)
         return Response(serializer.errors, status=400)
-    
-
-
-# {
-#         "id": 2,
-#         "username": "vasya",
-#         "password": "1qaz2wsx",
-#         "position": null
-#     },
-#     {
-#         "id": 3,
-#         "username": "arz",
-#         "password": "1qaz2wsx",
-#         "position": null
-#     },
-#     {
-#         "id": 4,
-#         "username": "akan",
-#         "password": "1qaz2wsx",
-#         "position": null
-#     },
-
-# {
-#          "username": "shitcoin",
-#          "password": "1qaz2wsx",
-#          "position": null
-# }
-
-{
-    "username": "vasya",
-    "password": "1qaz2wsx",
-    "position": {
-        "position": "june"
-    }
-}

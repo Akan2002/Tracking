@@ -10,19 +10,16 @@ class UserPositionSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    position = UserPositionSerializer(required=False)
 
     class Meta:
         model = User
         fields = ('id', 'username', 'password', 'position')
 
     def create(self, validated_data):
-        position_data = validated_data.pop('position')
         password = validated_data.pop('password')
         user = User(**validated_data)
         user.set_password(password)
         user.save()
-        UserPosition.objects.create(user=user, **position_data)
         return user
 
 
