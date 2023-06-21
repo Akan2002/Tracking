@@ -1,7 +1,7 @@
 from rest_framework.routers import DefaultRouter as DR
 from django.urls import path
 from apps.users.views import (
-    UserView, UserPositionView, RegistrationView, AuthenticationView
+    UserView, UserPositionView, RegistrationView, AuthenticationView,
 )
 
 router = DR()

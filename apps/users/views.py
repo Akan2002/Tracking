@@ -3,8 +3,11 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework import permissions
+import requests
 
 from django.contrib.auth.hashers import check_password
+
 
 from apps.users.models import User, UserPosition
 from apps.users.serializers import (
@@ -12,14 +15,21 @@ from apps.users.serializers import (
     UserSerializer, AuthenticationSerializer,
 )
 
+class IsAdminUser(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.user and request.user.is_superuser
+
+
+
 class UserView(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-
+    permission_classes = [IsAdminUser]
 
 class UserPositionView(ModelViewSet):
     queryset = UserPosition.objects.all()
     serializer_class = UserPositionSerializer
+    permission_classes = [IsAdminUser]
 
 
 class RegistrationView(APIView):
