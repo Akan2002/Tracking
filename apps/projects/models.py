@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-class Projects(models.Model):
+class Project(models.Model):
     name = models.CharField(max_length=127, verbose_name='Название')
     description = models.TextField(verbose_name='Описание')
     link = models.URLField(verbose_name='Ссылка')

@@ -1,11 +1,11 @@
 from rest_framework.routers import DefaultRouter as DR
 
-from apps.projects.views import ProjectsView
+from apps.projects.views import ProjectView
 
 router = DR()
 
-router.register('projects', ProjectsView, basename='projects')
+router.register('project', ProjectView, basename='projects')
 
-urlpatterns2 = []
+urlpatterns = []
 
-urlpatterns2 += router.urls
+urlpatterns += router.urls
