@@ -1,4 +1,4 @@
-#!/bin/sh
+!/bin/sh
 
 until cd /app/
 do

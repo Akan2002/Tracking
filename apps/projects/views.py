@@ -1,3 +1,11 @@
-from django.shortcuts import render
+from rest_framework.viewsets import ModelViewSet
 
-# Create your views here.
+from apps.projects.serializers import (
+    ProjectSerializer
+)
+
+from apps.projects.models import Project
+
+class ProjectView(ModelViewSet):
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
