@@ -25,6 +25,7 @@ class UserView(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAdminUser]
+    
 
 class UserPositionView(ModelViewSet):
     queryset = UserPosition.objects.all()

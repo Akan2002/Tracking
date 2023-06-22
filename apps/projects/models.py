@@ -11,9 +11,9 @@ class Project(models.Model):
     assignee = models.ManyToManyField(User, related_name='assigned_projects', verbose_name='Исполнитель')
     participants = models.ManyToManyField(User, blank=True, verbose_name='Участники')
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
-
+    
     class Meta:
         verbose_name = 'Проект'
         verbose_name_plural = 'Проекты'
