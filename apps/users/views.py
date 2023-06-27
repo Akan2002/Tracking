@@ -1,57 +1,39 @@
+from rest_framework import generics
 from rest_framework.viewsets import ModelViewSet
-from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework import permissions
-import requests
+from rest_framework.permissions import IsAdminUser
 
-from django.contrib.auth.hashers import check_password
-
-
-from apps.users.models import User, UserPosition
+from apps.users.models import User, Position
+from apps.users.permissions import IsOwnerOrAdminOrReadOnly
 from apps.users.serializers import (
-    UserSerializer, UserPositionSerializer, 
-    UserSerializer, AuthenticationSerializer,
+    UserSerializer,
+    UserRegisterSerializer,
+    UserUpdateSerializer,
+    PositionSerializer
 )
 
-class IsAdminUser(permissions.BasePermission):
-    def has_permission(self, request, view):
-        return request.user and request.user.is_superuser
+
+class UserView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = User.objects.all()
+    permission_classes = (IsOwnerOrAdminOrReadOnly,)
+
+    def get_serializer_class(self):
+        if self.request.method in ["PUT", "PATCH"]:
+            return UserUpdateSerializer
+        return UserSerializer
 
 
-
-class UserView(ModelViewSet):
+class UserListView(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAdminUser]
-    
-
-class UserPositionView(ModelViewSet):
-    queryset = UserPosition.objects.all()
-    serializer_class = UserPositionSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = (IsOwnerOrAdminOrReadOnly,)
 
 
-class RegistrationView(APIView):
-    def post(self, request):
-        serializer = UserSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.save()
-            refresh = RefreshToken.for_user(user)
-            return Response({
-                'user_id': user.id,
-                'username': user.username,
-                'position': user.position.position,
-                'access_token': str(refresh.access_token),
-                'refresh_token': str(refresh),
-            }, status=201)
-        return Response(serializer.errors, status=400)
+class PositionView(ModelViewSet):
+    queryset = Position.objects.all()
+    serializer_class = PositionSerializer
+    permission_classes = (IsAdminUser,)
 
 
-class AuthenticationView(APIView):
-    def post(self, request):
-        serializer = AuthenticationSerializer(data=request.data)
-        if serializer.is_valid():
-            return Response(serializer.validated_data, status=200)
-        return Response(serializer.errors, status=400)
+class RegistrationView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserRegisterSerializer

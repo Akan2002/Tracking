@@ -6,7 +6,7 @@ from drf_yasg import openapi
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="WhiteBirdAPI",
+        title="SnowFlakeCRMAPI",
         default_version="v1",
         contact=openapi.Contact(email="gulyashshsh@gmail.com"),
     ),

@@ -4,7 +4,7 @@ from apps.projects.views import ProjectView
 
 router = DR()
 
-router.register('project', ProjectView, basename='projects')
+router.register("projects", ProjectView, basename="projects")
 
 urlpatterns = []
 
