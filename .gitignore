@@ -133,4 +133,5 @@ dmypy.json
 .idea
 
 media/
+static/
 .env
