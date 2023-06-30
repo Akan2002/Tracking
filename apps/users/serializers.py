@@ -20,6 +20,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = COMMON_FIELDS_COPY + ["position_title"]
 
 
+
 class UserRegisterSerializer(serializers.ModelSerializer):
     password_confirm = serializers.CharField(write_only=True)
     position_title = serializers.ReadOnlyField(source="position.title")
