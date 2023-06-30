@@ -31,3 +31,5 @@ class TrackingUpdateDeleteView(generics.UpdateAPIView, generics.DestroyAPIView):
     queryset = Tracking.objects.all()
     serializer_class = TrackingSerializer
     permission_classes = (IsAdminUser,)
+
+

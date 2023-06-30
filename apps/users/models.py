@@ -7,7 +7,7 @@ class Position(models.Model):
 
     def __str__(self) -> str:
         return self.position
-
+    
     class Meta:
         verbose_name = "Позиция (должность)"
         verbose_name_plural = "Позиции (должности)"
