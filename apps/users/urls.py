@@ -19,7 +19,7 @@ router.register("positions", PositionView)
 
 urlpatterns = [
     path("users/", UserListView.as_view()),
-    path("users/<int:pk>", UserView.as_view()),
+    path("users/<int:pk>/", UserView.as_view()),
     path("users/me/", UserMeView.as_view()),
     path("auth/register/", RegistrationView.as_view()),
     path("auth/login/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
