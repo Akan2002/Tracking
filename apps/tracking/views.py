@@ -1,7 +1,9 @@
 from datetime import date
 
-from rest_framework import generics
-from rest_framework.permissions import IsAdminUser
+from rest_framework import generics, viewsets
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from rest_framework.viewsets import ReadOnlyModelViewSet
+
 from django_filters.rest_framework import DjangoFilterBackend
 
 from apps.tracking.models import Tracking
@@ -24,6 +26,11 @@ class TrackingListCreateView(generics.ListCreateAPIView):
         self.filterset_class.base_filters['date_to'].default = current_date
 
         queryset = super().get_queryset()
+        
+        username = self.request.query_params.get('username')
+        if username:
+            queryset = queryset.filter(user__username=username)
+
         return queryset
 
 
@@ -33,3 +40,13 @@ class TrackingUpdateDeleteView(generics.UpdateAPIView, generics.DestroyAPIView):
     permission_classes = (IsAdminUser,)
 
 
+class UserTrackingViewSet(ReadOnlyModelViewSet):
+    serializer_class = TrackingSerializer
+    permission_classes = (IsAuthenticated,)
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = TrackingFilter
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = Tracking.objects.filter(user=user)
+        return queryset
